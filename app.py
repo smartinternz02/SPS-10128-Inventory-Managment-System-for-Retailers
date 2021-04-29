@@ -3,6 +3,7 @@ from flask_mysqldb import MySQL
 import MySQLdb.cursors
 from re import match
 from datetime import datetime
+from sendmail_g import sendmail
 
 app = Flask(__name__)
 
@@ -51,6 +52,7 @@ def contact():
             mysql.connection.commit()
             cursor.close()
             msg = 'We have successfully received your request.'
+            sendmail('IMS ContactUs', 'We have successfully received your request. We\'ll be touch in with you soon.', email)
             return render_template('index.html', msg=msg)
 
     return render_template('contact.html')
@@ -112,10 +114,11 @@ def register():
         mysql.connection.commit()
         cursor.close()
 
-        msg = 'successfully registered'
-        data = [username, name, mail, contact, password, check]
+        msg = 'Successfully registered'
 
-    return render_template('register.html', success_msg=msg, data=data)
+        sendmail('IMS Sinup Info', 'You are successfuly registered in IMS. Your username is {} and your password is {}. Please do not share with anyone.'.format(username, password), mail)
+
+    return render_template('register.html', success_msg=msg)
 
 
 # Managing Authentication
@@ -129,7 +132,7 @@ def login():
 
         cursor = mysql.connection.cursor()
         cursor.execute(
-            'SELECT username, password from users where username = %s', (username,))
+            'SELECT username, password, email from users where username = %s', (username,))
         mysql.connection.commit()
         user_data = cursor.fetchone()
         cursor.close()
@@ -137,7 +140,14 @@ def login():
         if user_data:
             if password == user_data[1]:
                 session['username'] = username
+                session['email'] = user_data[2]
+                
+                # sending email
+                message = f'{username}, You have successfully logged into IMS on {datetime.now()}. If this is not you then send us a message at 9876543210 with your username from registered number.'
+                to_mail = user_data[2]
+                sendmail('IMS Security Review', message, to_mail)
                 return render_template('index.html', session=session)
+
             else:
                 msg = 'Password do not match'
                 return render_template('login.html', msg=msg)
@@ -148,6 +158,11 @@ def login():
 
     else:
         if 'username' in session:
+
+            message = f'{session[username]}, You have successfully logged into IMS on {datetime.now()}. If this is not you then send  us at 9876543210 with your username from registered number.'
+            to_mail = session.get('email')
+            sendmail('IMS Security Review', message, to_mail)
+
             return redirect(url_for('index'))
 
     return render_template('login.html', user_data=user_data)
@@ -163,28 +178,33 @@ def logout():
 
 @app.route('/services')
 def services():
-    cursor = mysql.connection.cursor()
-    cursor.execute('SELECT * FROM shop;')
-    mysql.connection.commit()
-    items = cursor.fetchall()
-    cursor.close()
-    print(items)
-    return render_template('ims.html', items=items)
+    if 'username' in session:
+        cursor = mysql.connection.cursor()
+        cursor.execute('SELECT * FROM shop;')
+        mysql.connection.commit()
+        items = cursor.fetchall()
+        cursor.close()
+        return render_template('ims.html', items=items)
+
+    msg = 'Please! login first to use IMS services.'
+    return render_template('login.html', msg=msg)
 
 
 @app.route('/update')
 def details():
-    cursor = mysql.connection.cursor()
-    cursor.execute('SELECT * FROM shop;')
-    mysql.connection.commit()
-    items = cursor.fetchall()
-    cursor.close()
-    print(items)
-    return render_template('update.html', items=items)
+    if 'username' in session:
+        cursor = mysql.connection.cursor()
+        cursor.execute('SELECT * FROM shop;')
+        mysql.connection.commit()
+        items = cursor.fetchall()
+        cursor.close()
+        print(items)
+        return render_template('update.html', items=items)
+    return render_template('login.html')
 
-
+# update delete add products
 @app.route('/delete', methods=['GET', 'POST'])
-def apply():
+def delete():
     if 'username' in session:
         msg = "You have successfully deleted."
         return render_template('update.html', msg=msg)
@@ -193,6 +213,25 @@ def apply():
         return render_template('login.html', msg=msg)
 
 
+@app.route('/add', methods=['GET', 'POST'])
+def add():
+    msg = ""
+    if request.method == 'POST':
+        name = request.form['name']
+        description = request.form['desc']
+        price = request.form['price']
+        stock = request.form['stock']
+        reorder_level = request.form['reol']
+        total = int(price) * int(stock)
+        
+        cursor = mysql.connection.cursor()
+        cursor.execute('INSERT INTO shop(name, description, price, stock, total, reorder_level) VALUES(%s, %s, %s, %s, %s, %s )', (name, description, price, stock, total, reorder_level))
+
+        mysql.connection.commit()
+        cursor.close()
+        msg = 'New product successfully added!'
+        
+    return render_template('additem.html', msg=msg)
 
 
 @app.route('/test')
@@ -204,6 +243,7 @@ def test():
     cursor.close()
     print(user_data)
     return "This is test page."
+
 
 # Running flask App
 if __name__ == '__main__':

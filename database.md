@@ -1,13 +1,13 @@
-# DBMS : MySQL Server 8.0
+# DBMS : MySQL Server 8.0 / Remote MySQL
 
 # Tables Used In Project JobPortal
-1. Users
-2. Contacts
-3. IMS
+1. users
+2. contacts
+3. shop
 
 # MySQL Command To Create Table User
 
-Create table Users(
+Create table users(
     userid int not null primary key auto_increment,
     username varchar(50) unique not null,
     name varchar(50) not null,
@@ -18,11 +18,11 @@ Create table Users(
     agree varchar(5) #agree for t&c
 );
 
-Alter table Users add auto_increment=1000;
+Alter table users add auto_increment=1000;
 
 # MySQL Command To Create Table Contacts
 
-Create table Contacts(
+Create table contacts(
     cid int not null primary key auto_increment,
     name varchar(50) not null,
     email varchar(50) not null,
@@ -33,21 +33,22 @@ Create table Contacts(
 
 Alter table contacts add auto_increment=100;
 
-# MySQL Command To Create Table Jobs
+# MySQL Command To Create Table Shop
 
-Create table Inventory(
-    inventoryid int not null primary key auto_increment,
-    username varchar(30) not null,
+Create table shop(
+    iid int not null primary key auto_increment,
     name varchar(100) not null,
     description varchar(50)  not null,
-    unitprice int not null,
-    qtystock int not null,
-    totalvalue int not null,
+    price int not null,
+    stock int not null,
+    total int not null,
 )auto_increment=1001;
 
 
-# Inserting Values Into Jobs Table
+# Inserting Values Into Table
 
-insert into inventory( inventoryid, username, name, description,unitprice, qtystock, totalvalue) 
-values(101, 'newuser', 'Juicer', 'description', 10, 10, 100);
+CREATE TABLE `rmVn4RoTHT`.`shop` ( `iid` INT NOT NULL ,  `name` VARCHAR(50) NOT NULL ,  `description` VARCHAR(250) NOT NULL ,  `price` DECIMAL NOT NULL ,  `stock` INT NOT NULL ,  `total` DECIMAL NOT NULL ,  `reoder_level` INT NOT NULL ) ENGINE = InnoDB;
+
+
+INSERT INTO `shop` (`inventory id`, `name`, `description`, `price`, `stock`, `total`, `reoder_level`) VALUES ('1', 'Soap Lux', 'Lux | Golden Rose| 25g pack', '23.00', '20', '460', '5');
 

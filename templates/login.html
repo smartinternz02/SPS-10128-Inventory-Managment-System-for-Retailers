@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {%block title %}login{% endblock %}
-{%block css %}{% endblock %}
+{%block css %}<style>
+    p a:hover{
+        color: rgb(211, 14, 14);
+    }
+</style>{% endblock %}
 
 {% block body %}
 
@@ -20,15 +24,9 @@
                 placeholder="Enter your password">
         </div>
 
-        <div class="mb-1 form-check">
-            <input type="checkbox" class="form-check-input" id="agree" name="agree">
-            <label class="form-check-label" for="agree">Keep me signed in.</label>
-        </div>
         <button type="submit" class="btn btn-primary">Login</button>
         <p>New to jobPortal<a href="{{ url_for('register') }}"> Register Here</a></p>
     </form>
-
-    {{user_data}}
 
 </div>
 

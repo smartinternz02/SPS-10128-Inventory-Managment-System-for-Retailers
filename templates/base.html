@@ -15,25 +15,20 @@
     <title>
         {%block title %}InventoryManagementSystem{% endblock %}
     </title>
-
+    {%block css %}
+    {% endblock %}
     <style>
         a {
             text-decoration: none;
             color: green;
         }
-
+    
         a:hover {
             color: white;
         }
-
-            {
-            %block css %
-        }
-
-            {
-            % endblock %
-        }
-
+    
+    
+    
         header {
             position: sticky;
             width: 100%;
@@ -42,6 +37,7 @@
             opacity: .9;
         }
     </style>
+    
 </head>
 
 <body>
@@ -63,7 +59,7 @@
                                 href="{{ url_for('index') }}">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {% block jobactive %}{% endblock %}"
+                            <a class="nav-link {% block imsactive %}{% endblock %}"
                                 href="{{ url_for('services') }}">IMS</a>
                         </li>
                         <li class="nav-item">

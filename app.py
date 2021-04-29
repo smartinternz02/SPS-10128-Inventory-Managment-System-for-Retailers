@@ -8,16 +8,19 @@ app = Flask(__name__)
 
 app.secret_key = 'AjqusjqnsjnuWGDgv53e2fwvdjwd6316F^D#^D#@'
 
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'root9408'
-app.config['MYSQL_DB'] = 'jobportal'
+# Remote MySQL Configuration
+
+app.config['MYSQL_HOST'] = 'remotemysql.com'
+app.config['MYSQL_USER'] = 'rmVn4RoTHT'
+app.config['MYSQL_PASSWORD'] = 'raFDgYFx4B'
+app.config['MYSQL_DB'] = 'rmVn4RoTHT'
+
 
 mysql = MySQL(app)
 
 # Primary Services
 
-
+# Rendering Pages
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -57,8 +60,8 @@ def contact():
 def about():
     return render_template('about.html')
 
-# Registering new users
 
+# Registering new users
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -116,18 +119,13 @@ def register():
 
 
 # Managing Authentication
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     user_data = None
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        keep_alive = request.form.get('agree')
-
-        if keep_alive == 'on':
-            keep_alive = True
-        else:
-            keep_alive = False
 
         cursor = mysql.connection.cursor()
         cursor.execute(
@@ -162,31 +160,50 @@ def logout():
 
 
 # Managing services
+
 @app.route('/services')
 def services():
     cursor = mysql.connection.cursor()
-    cursor.execute('SELECT * FROM jobs')
+    cursor.execute('SELECT * FROM shop;')
     mysql.connection.commit()
-    jobs = cursor.fetchall()
+    items = cursor.fetchall()
     cursor.close()
-    rows = len(jobs)
-    return render_template('services.html', jobs=jobs, rows=rows)
+    print(items)
+    return render_template('ims.html', items=items)
 
 
-@app.route('/details')
+@app.route('/update')
 def details():
-    return render_template('details.html')
+    cursor = mysql.connection.cursor()
+    cursor.execute('SELECT * FROM shop;')
+    mysql.connection.commit()
+    items = cursor.fetchall()
+    cursor.close()
+    print(items)
+    return render_template('update.html', items=items)
 
 
-@app.route('/apply', methods=['GET', 'POST'])
+@app.route('/delete', methods=['GET', 'POST'])
 def apply():
     if 'username' in session:
-        msg = "You have successfully applied to this job."
-        return render_template('services.html', msg=msg)
+        msg = "You have successfully deleted."
+        return render_template('update.html', msg=msg)
     else:
-        msg = "You must login to apply to this job."
-        return render_template('details.html', msg=msg)
+        msg = "You must login to delete."
+        return render_template('login.html', msg=msg)
 
+
+
+
+@app.route('/test')
+def test():
+    cursor = mysql.connection.cursor()
+    cursor.execute('show tables;')
+    mysql.connection.commit()
+    user_data = cursor.fetchall()
+    cursor.close()
+    print(user_data)
+    return "This is test page."
 
 # Running flask App
 if __name__ == '__main__':

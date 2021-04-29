@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {%block title %}register{% endblock %}
-{%block css %}{% endblock %}
+{%block css %}<style>
+    p a:hover{
+        color: #ff0000;
+    }
+</style>{% endblock %}
 
 {% block body %}
 
@@ -54,8 +58,9 @@
             <p>Already Registered!<a href="{{ url_for('login') }}"> Login</a></p>
         </div>
         <button type="submit" class="btn btn-primary">Register</button>
+        {% if success_msg  %}
         <div style="color: green;" class="form-text">{{success_msg}}</div>
-        <div style="color: green;" class="form-text">{{data}}</div>
+        {% endif %}
 
     </form>
 

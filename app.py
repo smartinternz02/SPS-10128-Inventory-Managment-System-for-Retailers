@@ -24,11 +24,13 @@ mysql = MySQL(app)
 # Rendering Pages
 @app.route('/')
 def index():
+    # A route to home page
     return render_template('index.html')
 
 
 @app.route('/contact', methods=['GET', 'POST'])
 def contact():
+    # A page where anyone can contact the IMS admin
     if request.method == 'POST':
         name = request.form['name']
         email = request.form['email']
@@ -67,6 +69,7 @@ def about():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    # A function to register new users
     msg = None
     data = None
     if request.method == 'POST':
@@ -178,6 +181,7 @@ def logout():
 
 @app.route('/services')
 def services():
+    # This function shows the IMS Table shop items
     if 'username' in session:
         cursor = mysql.connection.cursor()
         cursor.execute('SELECT * FROM shop;')
@@ -192,6 +196,7 @@ def services():
 
 @app.route('/update')
 def details():
+    # This function simply throws you on update and delete page
     if 'username' in session:
         cursor = mysql.connection.cursor()
         cursor.execute('SELECT * FROM shop;')
@@ -202,19 +207,35 @@ def details():
         return render_template('update.html', items=items)
     return render_template('login.html')
 
+
 # update delete add products
-@app.route('/delete', methods=['GET', 'POST'])
-def delete():
+
+@app.route('/deleteitem/<int:id>')
+def deleteitem(id):
+    id = id
     if 'username' in session:
-        msg = "You have successfully deleted."
-        return render_template('update.html', msg=msg)
+        return render_template('deleteitem.html', id=id)
     else:
         msg = "You must login to delete."
         return render_template('login.html', msg=msg)
 
 
+@app.route('/delete', methods=['GET', 'POST'])
+def delete():
+    if 'username' in session:
+        if request.method == 'POST':
+            iid = request.form['iid']
+            cursor = mysql.connection.cursor()
+            cursor.execute('DELETE FROM shop where iid = %s', (iid,))
+            mysql.connection.commit()
+            cursor.close()
+            msg = "You have successfully deleted the item."
+            return render_template('update.html', msg=msg)
+
+
 @app.route('/add', methods=['GET', 'POST'])
 def add():
+    # This function add a new product to shop
     msg = ""
     if request.method == 'POST':
         name = request.form['name']
@@ -234,8 +255,43 @@ def add():
     return render_template('additem.html', msg=msg)
 
 
+@app.route('/updateitem/<int:id>')
+def updateitem(id):
+    id = id
+    cursor = mysql.connection.cursor()
+    cursor.execute('SELECT * FROM shop WHERE iid=%s', (id,))
+    mysql.connection.commit()
+    data = cursor.fetchone()
+    cursor.close()
+    mydata = {'id': data[0], 'name': data[1], 'desc': data[2], 'price': data[3],
+              'stock': data[4], 'total': data[5], 'reorder': data[6]}
+    return render_template('updateitem.html', data=mydata)
+
+
+@app.route('/updateprod', methods=['GET', 'POST'])
+def update():
+    if request.method == 'POST':
+        id = request.form['iid']
+        name = request.form['name']
+        description = request.form['desc']
+        price = request.form['price']
+        stock = request.form['stock']
+        reorder_level = request.form['reol']
+        total = int(price) * int(stock)
+
+        # query = f'UPDATE shop SET name={name}, description={description}, price={price}, stock={stock}, reorder_level={reorder_level}, total={total} WHERE 1 iid={id}'
+        cursor = mysql.connection.cursor()
+        cursor.execute('Update shop SET name=%s, description=%s, price=%s, stock=%s, total=%s, reorder_level=%s WHERE iid=%s',
+                       (name, description, price, stock, total, reorder_level, id))
+
+        mysql.connection.commit()
+        cursor.close()
+        msg = 'Successfully updated!'
+        return render_template('update.html', msg=msg)
+
 @app.route('/test')
 def test():
+    # This method show tables in your current database
     cursor = mysql.connection.cursor()
     cursor.execute('show tables;')
     mysql.connection.commit()

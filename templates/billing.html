@@ -72,13 +72,12 @@
                     <td>{{item[2]}}</td>
                     <td>{{item[3]}}</td>
                     <td><a href="" class="btn btn-primary">+</a></td>
-                    <td><a href="" class="btn btn-danger">-</a></td>
                 </tr>
             {% endfor %}
             </table>
         </div>
 
-        <!-- ***************Billing Items******************** -->
+        <!-- *************** Billing Items ******************** -->
         <div id="d01" class="my-4">
             <h3>Billed Items</h3>
             <table style="width:100%">
@@ -91,26 +90,27 @@
                 </tr>
 
                 <tr>
-                    <td>1001</td>
-                    <td>data1</td>
-                    <td>10</td>
-                    <td>10</td>
-                    <td>100</td>
-
+                    <td><input type="text" value="" id="d1"></td>
+                    <td><input type="text" value="" id="d2"></td>
+                    <td><input type="text" value="" id="d3"></td>
+                    <td><input type="text" value="" id="d4"></td>
+                    <td><input type="text" value="" id="d5"></td>
+                    <td><a href="" class="btn btn-danger">-</a></td>
                 </tr>
 
             </table>
 
+            <input class="form-group form-select-lg mt-2"  type="text" name="sum" id="sum" readonly placeholder="Total Billed Amount">
+            <a href="" class="btn btn-primary mt-0 btn-lg">Total</a>
 
         </div>
     </div>
 
-</div>
+</div>  
 </div>
 
 
 {% endblock %}
 
 {% block js %}
-
 {% endblock %}

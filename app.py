@@ -313,7 +313,7 @@ def billing():
                 return render_template('billing.html', items=items)
             if name:
                 cursor = mysql.connection.cursor()
-                cursor.execute('SELECT * FROM shop WHERE name= LIKE %s', (name,))
+                cursor.execute('SELECT * FROM shop WHERE name IN (%s, %s)', (name, name))
                 mysql.connection.commit()
                 items = cursor.fetchall()
                 cursor.close()
@@ -322,6 +322,8 @@ def billing():
                 msg = 'Please try another valid keyword to search.'
                 return render_template('billing.html', msg=msg)
         return render_template('billing.html')
+
+
 
 # Running flask App
 if __name__ == '__main__':

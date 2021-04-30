@@ -12,4 +12,3 @@ def sendmail(subject, message, to_mail):
     message = f'Subject : {subject} \n\n {message}'
     s.sendmail(from_mail, to_mail, message)
     s.quit()
-

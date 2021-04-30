@@ -1,6 +1,6 @@
 # DBMS : MySQL Server 8.0 / Remote MySQL
 
-# Tables Used In Project JobPortal
+# Tables Used In Project IMS for Retailers's
 1. users
 2. contacts
 3. shop

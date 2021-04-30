@@ -149,7 +149,8 @@ def login():
                 message = f'{username}, You have successfully logged into IMS on {datetime.now()}. If this is not you then send us a message at 9876543210 with your username from registered number.'
                 to_mail = user_data[2]
                 sendmail('IMS Security Review', message, to_mail)
-                return render_template('index.html', session=session)
+                msg = 'You are successfully logged in!'
+                return render_template('index.html', session=session, msg=msg)
 
             else:
                 msg = 'Password do not match'
@@ -203,7 +204,6 @@ def details():
         mysql.connection.commit()
         items = cursor.fetchall()
         cursor.close()
-        print(items)
         return render_template('update.html', items=items)
     return render_template('login.html')
 
@@ -212,6 +212,7 @@ def details():
 
 @app.route('/deleteitem/<int:id>')
 def deleteitem(id):
+    # This function set id in input box of delete page
     id = id
     if 'username' in session:
         return render_template('deleteitem.html', id=id)
@@ -222,6 +223,7 @@ def deleteitem(id):
 
 @app.route('/delete', methods=['GET', 'POST'])
 def delete():
+    # This function perform the delete operation
     if 'username' in session:
         if request.method == 'POST':
             iid = request.form['iid']
@@ -257,6 +259,7 @@ def add():
 
 @app.route('/updateitem/<int:id>')
 def updateitem(id):
+    # This function set the previous values in input box on update page
     id = id
     cursor = mysql.connection.cursor()
     cursor.execute('SELECT * FROM shop WHERE iid=%s', (id,))
@@ -270,6 +273,7 @@ def updateitem(id):
 
 @app.route('/updateprod', methods=['GET', 'POST'])
 def update():
+    # This function perform the update
     if request.method == 'POST':
         id = request.form['iid']
         name = request.form['name']
@@ -289,17 +293,35 @@ def update():
         msg = 'Successfully updated!'
         return render_template('update.html', msg=msg)
 
-@app.route('/test')
-def test():
-    # This method show tables in your current database
-    cursor = mysql.connection.cursor()
-    cursor.execute('show tables;')
-    mysql.connection.commit()
-    user_data = cursor.fetchall()
-    cursor.close()
-    print(user_data)
-    return "This is test page."
+# Creating a billing system
 
+@app.route('/billing', methods=['GET', 'POST'])
+def billing():
+    iid = None
+    name = None
+    if 'username' in session:
+        if request.method == 'POST':        
+            iid = request.form.get('iid')
+            name = request.form.get('pname')
+            print(iid, name)
+            if iid:
+                cursor = mysql.connection.cursor()
+                cursor.execute('SELECT * FROM shop WHERE iid=%s', (iid,))
+                mysql.connection.commit()
+                items = cursor.fetchall()
+                cursor.close()
+                return render_template('billing.html', items=items)
+            if name:
+                cursor = mysql.connection.cursor()
+                cursor.execute('SELECT * FROM shop WHERE name= LIKE %s', (name,))
+                mysql.connection.commit()
+                items = cursor.fetchall()
+                cursor.close()
+                return render_template('billing.html', items=items)
+            else:
+                msg = 'Please try another valid keyword to search.'
+                return render_template('billing.html', msg=msg)
+        return render_template('billing.html')
 
 # Running flask App
 if __name__ == '__main__':

@@ -97,7 +97,7 @@
         </nav>
     </header>
 
-    {% if 'username' in session %}
+    {% if 'username' in session and msg %}
     <div class="alert alert-success alert-dismissible fade show" role="alert">
         <strong>Hey !</strong> {{session.username}} <em>{{msg}}</em>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>

@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{%block title %} ims | billing {% endblock %}
+{%block css %}
+<style>
+    .mybillarea {
+        font-size: 16px;
+        border: 2px solid #000;
+        margin: 1em;
+        padding: 1em;
+    }
+
+    td {
+        background-color: rgb(226, 228, 229);
+        margin-bottom: .5rem;
+        border-bottom: 2px solid #fff;
+    }
+
+    #p01 {
+        font-size: 18px;
+        text-align: center;
+        border-bottom: 1px dashed #000;
+    }
+
+    label {
+        margin: .4em 0px;
+    }
+</style>
+{% endblock %}
+{% block billactive %}active{% endblock %}
+
+{% block body %}
+
+<div class="container">
+    <h2>Bill Management System</h2>
+    <div class="mybillarea container">
+        <p id="p01">ABC Retailer Shop
+            <br> M.987654321
+        </p>
+        <label for="cname">Bill No :&emsp; </label><input type="text" id="cno">
+        <label for="cname">Customer Name:&emsp; </label><input type="text" id="cname">
+
+
+        <!-- **************************Search box********************* -->
+        <div class="my-4">
+            <h4>Search products from shop by ID / Product Name</h4>
+
+            <form action="/billing" method="POST">
+
+                <label for="iid">Inventory Id:&emsp; </label>
+                <input type="text" id="iid" name="iid"/>
+
+                <label for="pname">Product Name:&emsp; </label>
+                <input type="text" id="pname" name="pname"/>
+
+                <button type="submit" class="btn btn-primary btn-sm">Search</button>
+            </form>
+        </div>
+
+        <div>
+            <h3>Search Results : &emsp;</h3>
+            <table style="width:100%">
+                <tr>
+                    <th>Inventory ID</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Unit Price</th>
+                </tr>
+            {% for item in items %}
+                <tr>
+                    <td>{{item[0]}}</td>
+                    <td>{{item[1]}}</td>
+                    <td>{{item[2]}}</td>
+                    <td>{{item[3]}}</td>
+                    <td><a href="" class="btn btn-primary">+</a></td>
+                    <td><a href="" class="btn btn-danger">-</a></td>
+                </tr>
+            {% endfor %}
+            </table>
+        </div>
+
+        <!-- ***************Billing Items******************** -->
+        <div id="d01" class="my-4">
+            <h3>Billed Items</h3>
+            <table style="width:100%">
+                <tr>
+                    <th>Inventory ID</th>
+                    <th>Name</th>
+                    <th>Unit Price</th>
+                    <th>Quantity</th>
+                    <th>Total Value</th>
+                </tr>
+
+                <tr>
+                    <td>1001</td>
+                    <td>data1</td>
+                    <td>10</td>
+                    <td>10</td>
+                    <td>100</td>
+
+                </tr>
+
+            </table>
+
+
+        </div>
+    </div>
+
+</div>
+</div>
+
+
+{% endblock %}
+
+{% block js %}
+
+{% endblock %}

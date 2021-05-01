@@ -4,6 +4,7 @@ import MySQLdb.cursors
 from re import match
 from datetime import datetime
 from sendmail_g import sendmail
+from time import sleep
 
 app = Flask(__name__)
 
@@ -19,12 +20,37 @@ app.config['MYSQL_DB'] = 'rmVn4RoTHT'
 
 mysql = MySQL(app)
 
-# Primary Services
+# Stock Notification
+def notify_stock():
+    # This function sends you a notification of stock shortage
+    print('***********Running Notify**************')
+    if 'username' in session:
+        print('***********Executing Notify************')
+        cursor = mysql.connection.cursor()
+        cursor.execute('SELECT * FROM shop;')
+        mysql.connection.commit()
+        items = cursor.fetchall()
+        cursor.close()
+
+        print('***********Executing Mail************')
+        subject = 'Stock Shortage Notification'
+        to_mail = session.get('email')
+        print('To mail:', to_mail)
+
+        for item in items:
+            if item[4] < item[6]:
+                message = f'Hi, Your stock {item[1]} with Iventory ID {item[0]} is below the reoder level. Please refill it as soon as possible to ignore the shortage of product in your shop.'
+                sendmail(subject, message, to_mail)
+                print('Mail has been sent.')
+    else:
+        print('*********Session is Empty**********')
 
 # Rendering Pages
+
 @app.route('/')
 def index():
     # A route to home page
+    notify_stock()
     return render_template('index.html')
 
 
@@ -50,11 +76,13 @@ def contact():
             return render_template('contact.html', msg=msg)
         else:
             cursor = mysql.connection.cursor()
-            cursor.execute('INSERT INTO contacts (name, email, subject, messsage, date) VALUES (%s, %s, %s, %s, %s)', (name, email, subject, message, date))
+            cursor.execute('INSERT INTO contacts (name, email, subject, messsage, date) VALUES (%s, %s, %s, %s, %s)',
+                           (name, email, subject, message, date))
             mysql.connection.commit()
             cursor.close()
             msg = 'We have successfully received your request.'
-            sendmail('IMS ContactUs', 'We have successfully received your request. We\'ll be touch in with you soon.', email)
+            sendmail(
+                'IMS ContactUs', 'We have successfully received your request. We\'ll be touch in with you soon.', email)
             return render_template('index.html', msg=msg)
 
     return render_template('contact.html')
@@ -119,9 +147,10 @@ def register():
 
         msg = 'Successfully registered'
 
-        sendmail('IMS Sinup Info', 'You are successfuly registered in IMS. Your username is {} and your password is {}. Please do not share with anyone.'.format(username, password), mail)
+        sendmail('IMS Sinup Info', 'You are successfuly registered in IMS. Your username is {} and your password is {}. Please do not share with anyone.'.format(
+            username, password), mail)
 
-    return render_template('register.html', success_msg=msg)
+    return render_template('register.html', success_msg=msg, msg=msg)
 
 
 # Managing Authentication
@@ -144,12 +173,13 @@ def login():
             if password == user_data[1]:
                 session['username'] = username
                 session['email'] = user_data[2]
-                
+
                 # sending email
                 message = f'{username}, You have successfully logged into IMS on {datetime.now()}. If this is not you then send us a message at 9876543210 with your username from registered number.'
                 to_mail = user_data[2]
                 sendmail('IMS Security Review', message, to_mail)
                 msg = 'You are successfully logged in!'
+                notify_stock()
                 return render_template('index.html', session=session, msg=msg)
 
             else:
@@ -166,6 +196,7 @@ def login():
             message = f'{session[username]}, You have successfully logged into IMS on {datetime.now()}. If this is not you then send  us at 9876543210 with your username from registered number.'
             to_mail = session.get('email')
             sendmail('IMS Security Review', message, to_mail)
+            notify_stock()
 
             return redirect(url_for('index'))
 
@@ -189,6 +220,7 @@ def services():
         mysql.connection.commit()
         items = cursor.fetchall()
         cursor.close()
+        notify_stock()
         return render_template('ims.html', items=items)
 
     msg = 'Please! login first to use IMS services.'
@@ -204,6 +236,7 @@ def details():
         mysql.connection.commit()
         items = cursor.fetchall()
         cursor.close()
+        notify_stock()
         return render_template('update.html', items=items)
     return render_template('login.html')
 
@@ -215,6 +248,7 @@ def deleteitem(id):
     # This function set id in input box of delete page
     id = id
     if 'username' in session:
+        notify_stock()
         return render_template('deleteitem.html', id=id)
     else:
         msg = "You must login to delete."
@@ -232,7 +266,14 @@ def delete():
             mysql.connection.commit()
             cursor.close()
             msg = "You have successfully deleted the item."
-            return render_template('update.html', msg=msg)
+
+            cursor = mysql.connection.cursor()
+            cursor.execute('SELECT * FROM shop;')
+            mysql.connection.commit()
+            items = cursor.fetchall()
+            cursor.close()
+            notify_stock()
+            return render_template('update.html', msg=msg, items=items)
 
 
 @app.route('/add', methods=['GET', 'POST'])
@@ -246,14 +287,16 @@ def add():
         stock = request.form['stock']
         reorder_level = request.form['reol']
         total = int(price) * int(stock)
-        
+
         cursor = mysql.connection.cursor()
-        cursor.execute('INSERT INTO shop(name, description, price, stock, total, reorder_level) VALUES(%s, %s, %s, %s, %s, %s )', (name, description, price, stock, total, reorder_level))
+        cursor.execute('INSERT INTO shop(name, description, price, stock, total, reorder_level) VALUES(%s, %s, %s, %s, %s, %s )',
+                       (name, description, price, stock, total, reorder_level))
 
         mysql.connection.commit()
         cursor.close()
         msg = 'New product successfully added!'
-        
+        notify_stock()
+
     return render_template('additem.html', msg=msg)
 
 
@@ -268,6 +311,7 @@ def updateitem(id):
     cursor.close()
     mydata = {'id': data[0], 'name': data[1], 'desc': data[2], 'price': data[3],
               'stock': data[4], 'total': data[5], 'reorder': data[6]}
+    notify_stock()
     return render_template('updateitem.html', data=mydata)
 
 
@@ -283,7 +327,6 @@ def update():
         reorder_level = request.form['reol']
         total = int(price) * int(stock)
 
-        # query = f'UPDATE shop SET name={name}, description={description}, price={price}, stock={stock}, reorder_level={reorder_level}, total={total} WHERE 1 iid={id}'
         cursor = mysql.connection.cursor()
         cursor.execute('Update shop SET name=%s, description=%s, price=%s, stock=%s, total=%s, reorder_level=%s WHERE iid=%s',
                        (name, description, price, stock, total, reorder_level, id))
@@ -291,15 +334,23 @@ def update():
         mysql.connection.commit()
         cursor.close()
         msg = 'Successfully updated!'
-        return render_template('update.html', msg=msg)
+
+        cursor = mysql.connection.cursor()
+        cursor.execute('SELECT * FROM shop;')
+        mysql.connection.commit()
+        items = cursor.fetchall()
+        cursor.close()
+        notify_stock()
+        return render_template('update.html', msg=msg, items=items)
 
 # Creating a billing system
+
 
 @app.route('/billing', methods=['GET', 'POST'])
 def billing():
     iid = None
     if 'username' in session:
-        if request.method == 'POST':        
+        if request.method == 'POST':
             iid = request.form.get('iid')
             if iid:
                 cursor = mysql.connection.cursor()
@@ -307,13 +358,20 @@ def billing():
                 mysql.connection.commit()
                 items = cursor.fetchall()
                 cursor.close()
+                notify_stock()
                 return render_template('billing.html', items=items)
             else:
                 msg = 'Please enter a valid product id'
                 return render_template('billing.html', msg=msg)
+                notify_stock()
+        
+        notify_stock()
         return render_template('billing.html')
+
+
+
 
 
 # Running flask App
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='127.0.0.1', port=5000, debug=True)

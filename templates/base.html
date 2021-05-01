@@ -65,6 +65,13 @@
                             <a class="nav-link {% block imsactive %}{% endblock %}"
                                 href="{{ url_for('services') }}">IMS</a>
                         </li>
+
+                        {% if 'username' in session %}
+                        <li class="nav-item">
+                            <a class="nav-link {% block billactive %}{% endblock %}" href="{{ url_for('billing') }}">Billing</a>
+                        </li>
+                        {% endif %}
+
                         <li class="nav-item">
                             <a class="nav-link {% block aboutactive %}{% endblock %}"
                                 href="{{ url_for('about') }}">About</a>

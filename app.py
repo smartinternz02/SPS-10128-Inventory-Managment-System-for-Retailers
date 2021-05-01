@@ -368,10 +368,6 @@ def billing():
         notify_stock()
         return render_template('billing.html')
 
-
-
-
-
 # Running flask App
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=5000, debug=True)

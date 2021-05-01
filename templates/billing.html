@@ -42,22 +42,20 @@
 
         <!-- **************************Search box********************* -->
         <div class="my-4">
-            <h4>Search products from shop by ID / Product Name</h4>
+            <h4>Enter the Inventory ID : </h4>
 
             <form action="/billing" method="POST">
 
                 <label for="iid">Inventory Id:&emsp; </label>
-                <input type="text" id="iid" name="iid"/>
+                <input type="text" id="iid" name="iid" />
 
-                <label for="pname">Product Name:&emsp; </label>
-                <input type="text" id="pname" name="pname"/>
-
-                <button type="submit" class="btn btn-primary btn-sm">Search</button>
+                <button type="submit" class="btn btn-primary btn-group-toggle btn-sm"><i class="fa fa-search"
+                        aria-hidden="true"></i></button>
             </form>
         </div>
 
         <div>
-            <h3>Search Results : &emsp;</h3>
+            <h3>Product Details : &emsp;</h3>
             <table style="width:100%">
                 <tr>
                     <th>Inventory ID</th>
@@ -65,22 +63,28 @@
                     <th>Description</th>
                     <th>Unit Price</th>
                 </tr>
-            {% for item in items %}
+
+                {% for item in items %}
                 <tr>
-                    <td>{{item[0]}}</td>
-                    <td>{{item[1]}}</td>
-                    <td>{{item[2]}}</td>
-                    <td>{{item[3]}}</td>
-                    <td><a href="" class="btn btn-primary">+</a></td>
+                    <td id="d1">{{item[0]}}</td>
+                    <td id="d2">{{item[1]}}</td>
+                    <td id="d3">{{item[2]}}</td>
+                    <td id="d4">{{item[3]}}</td>
                 </tr>
-            {% endfor %}
+                {% endfor %}
+
+                <tr>
+                    <td><button class="btn btn-primary btn-group-toggle" id="plus-btn">Add to bill</button>
+                    </td>
+                </tr>
             </table>
         </div>
 
         <!-- *************** Billing Items ******************** -->
         <div id="d01" class="my-4">
             <h3>Billed Items</h3>
-            <table style="width:100%">
+            <table style="width:100%" id="itemslist">
+                <!-- itemslist -->
                 <tr>
                     <th>Inventory ID</th>
                     <th>Name</th>
@@ -89,28 +93,73 @@
                     <th>Total Value</th>
                 </tr>
 
-                <tr>
-                    <td><input type="text" value="" id="d1"></td>
-                    <td><input type="text" value="" id="d2"></td>
-                    <td><input type="text" value="" id="d3"></td>
-                    <td><input type="text" value="" id="d4"></td>
-                    <td><input type="text" value="" id="d5"></td>
-                    <td><a href="" class="btn btn-danger">-</a></td>
-                </tr>
-
             </table>
 
-            <input class="form-group form-select-lg mt-2"  type="text" name="sum" id="sum" readonly placeholder="Total Billed Amount">
-            <a href="" class="btn btn-primary mt-0 btn-lg">Total</a>
+            <input class="form-group form-select-lg mt-2" type="text" name="totalsum" id="totalsum" readonly
+                placeholder="Total Billed Amount">
+            <button class="btn btn-info btn-group-toggle" id="clearTotal">Clear Total</button>
 
         </div>
     </div>
 
-</div>  
+</div>
 </div>
 
 
 {% endblock %}
 
 {% block js %}
+
+<script>
+
+   
+    if (sessionStorage.getItem('sum') == null) {
+        //if sum is null
+        sessionStorage.setItem('sum', JSON.stringify('0'));
+        console.log('else sum', sessionStorage.getItem('sum'))
+    } else {
+        // if sessionStorage has sum
+        sum = parseInt(JSON.parse(sessionStorage.getItem('sum')));
+        console.log('else sum', sum)
+    };
+
+    let arr = [];
+
+    $("#plus-btn").click(function () {
+        console.log("clicked");
+        let iid = $('#d1').text();
+        let pname = $('#d2').text()
+        let price = parseInt($('#d4').text())
+        let qty = 1
+        let total = price * qty
+
+        arr.push([iid, pname, price, qty, total])
+        console.log(arr)
+
+        mystr = `
+                <tr>
+                    <td><input type="text" value="${iid}"></td>
+                    <td><input type="text" value="${pname}"></td>
+                    <td><input type="text" value="${price}"></td>
+                    <td><input type="text" value="${qty}"></td>
+                    <td><input type="text" value="${total}"></td>
+
+                </tr>
+                `
+        $('#itemslist').append(mystr);
+        
+        sum = parseInt(JSON.parse(sessionStorage.getItem('sum')));
+        sum += total;
+        sessionStorage.setItem('sum', JSON.stringify(sum))
+        $('#totalsum').val('');
+        $('#totalsum').val(sum);
+    });
+
+    $("#clearTotal").on("click", function () {
+        sessionStorage.clear();
+        sessionStorage.setItem('sum', JSON.stringify('0'))
+        $('#totalsum').val('');
+    });
+
+</script>
 {% endblock %}

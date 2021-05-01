@@ -298,12 +298,9 @@ def update():
 @app.route('/billing', methods=['GET', 'POST'])
 def billing():
     iid = None
-    name = None
     if 'username' in session:
         if request.method == 'POST':        
             iid = request.form.get('iid')
-            name = request.form.get('pname')
-            print(iid, name)
             if iid:
                 cursor = mysql.connection.cursor()
                 cursor.execute('SELECT * FROM shop WHERE iid=%s', (iid,))
@@ -311,18 +308,10 @@ def billing():
                 items = cursor.fetchall()
                 cursor.close()
                 return render_template('billing.html', items=items)
-            if name:
-                cursor = mysql.connection.cursor()
-                cursor.execute('SELECT * FROM shop WHERE name IN (%s, %s)', (name, name))
-                mysql.connection.commit()
-                items = cursor.fetchall()
-                cursor.close()
-                return render_template('billing.html', items=items)
             else:
-                msg = 'Please try another valid keyword to search.'
+                msg = 'Please enter a valid product id'
                 return render_template('billing.html', msg=msg)
         return render_template('billing.html')
-
 
 
 # Running flask App

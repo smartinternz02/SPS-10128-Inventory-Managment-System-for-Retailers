@@ -414,11 +414,11 @@ def updatepass():
         if user_data:
             if oldpass == user_data[1]:
                 cursor = mysql.connection.cursor()
-                cursor.execute('UPDATE users SET password= %s where username = %s', (username,pass1))
+                cursor.execute('UPDATE `users` SET `password`=%s WHERE `username`=%s', (uname, pass1))
                 mysql.connection.commit()
-                user_data = cursor.fetchone()
                 cursor.close()
                 msg = 'Password updated successfully'
+                print('************password updated successfully****************')
                 return render_template('login.html', msg=msg)
         else:
             msg = 'Username or Password is Incorrect'

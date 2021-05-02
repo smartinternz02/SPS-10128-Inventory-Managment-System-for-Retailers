@@ -21,7 +21,7 @@ Inventory Managment System for Retailers
 ## Registeration Error
 ![Homepage](./Project_Images/2b.png "IMS Homepage")
 
-## IMS
+## Inventory Table
 ![Homepage](./Project_Images/3a.png "IMS Homepage")
 
 ## Add new products
@@ -36,7 +36,7 @@ Inventory Managment System for Retailers
 ## IMS Update Item
 ![Homepage](./Project_Images/4b.png "IMS Homepage")
 
-## IMS Delete
+## IMS Delete Item
 ![Homepage](./Project_Images/4c.png "IMS Homepage")
 
 ## About Page

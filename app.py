@@ -367,8 +367,7 @@ def billing():
         return render_template('billing.html')
 
 
-
-@app.route('/forgetpass')
+@app.route('/forgetpass', methods=['GET', 'POST'])
 def forgetpass():
     if request.method == 'POST':
         username = request.form['username']
@@ -394,8 +393,8 @@ def forgetpass():
     return render_template('passwordforget.html',my_msg='')
 
 
-@app.route('/updatepass')
-def newpass():
+@app.route('/updatepass', methods=['GET', 'POST'])
+def updatepass():
     if request.method == 'POST':
         uname = request.form['username']
         oldpass = request.form['password']
@@ -404,10 +403,10 @@ def newpass():
 
         if pass1 != pass2:
             msg = 'New password not matched!'
-            return render_template('passwordupdate', my_msg=msg)
+            return render_template('passwordupdate.html', my_msg=msg)
 
         cursor = mysql.connection.cursor()
-        cursor.execute('SELECT username, password, email from users where username = %s', (username,))
+        cursor.execute('SELECT username, password, email from users where username = %s', (uname,))
         mysql.connection.commit()
         user_data = cursor.fetchone()
         cursor.close()
@@ -423,11 +422,11 @@ def newpass():
                 return render_template('login.html', msg=msg)
         else:
             msg = 'Username or Password is Incorrect'
-            return render_template('passwordupdate', my_msg=msg)
-    return render_template('passwordupdate', my_msg='')
+            return render_template('passwordupdate.html', my_msg=msg)
+    return render_template('passwordupdate.html', my_msg='')
         
         
 # Running flask App
 if __name__ == '__main__':
     host='0.0.0.0'
-    app.run(debug=False)
+    app.run(debug=True)

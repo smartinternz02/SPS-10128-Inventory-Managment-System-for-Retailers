@@ -135,7 +135,6 @@ def register():
             msg = 'You must agree all T&Cs.'
             return render_template('register.html', msg=msg, check=check, valid=True)
 
-        msg = 'successfully registered'
         data = [username, name, mail, contact, password, check]
 
         # Storing data to database
@@ -150,6 +149,7 @@ def register():
         sendmail('IMS Sinup Info', 'You are successfuly registered in IMS. Your username is {} and your password is {}. Please do not share with anyone.'.format(
             username, password), mail)
 
+        return render_template('login.html', msg=msg)
     return render_template('register.html', success_msg=msg, msg=msg)
 
 

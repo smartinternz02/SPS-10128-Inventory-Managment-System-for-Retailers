@@ -4,7 +4,6 @@ import MySQLdb.cursors
 from re import match
 from datetime import datetime
 from sendmail_g import sendmail
-from time import sleep
 
 app = Flask(__name__)
 
@@ -21,6 +20,8 @@ app.config['MYSQL_DB'] = 'rmVn4RoTHT'
 mysql = MySQL(app)
 
 # Stock Notification
+
+
 def notify_stock():
     # This function sends you a notification of stock shortage
     print('***********Running Notify**************')
@@ -45,7 +46,8 @@ def notify_stock():
     else:
         print('*********Session is Empty**********')
 
-# Rendering Pages
+# ************************Rendering Pages***********************
+
 
 @app.route('/')
 def index():
@@ -92,8 +94,6 @@ def contact():
 def about():
     return render_template('about.html')
 
-
-# Registering new users
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -150,13 +150,12 @@ def register():
             username, password), mail)
 
         return render_template('login.html', msg=msg)
-    return render_template('register.html', success_msg=msg, msg=msg)
+    return render_template('register.html', success_msg=msg, msg=msg, valid=True, check=True)
 
-
-# Managing Authentication
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    # Managing Authentication
     user_data = None
     if request.method == 'POST':
         username = request.form['username']
@@ -209,7 +208,7 @@ def logout():
     return redirect(url_for('login'))
 
 
-# Managing services
+# ***********************Managing services*****************************
 
 @app.route('/services')
 def services():
@@ -343,11 +342,10 @@ def update():
         notify_stock()
         return render_template('update.html', msg=msg, items=items)
 
-# Creating a billing system
-
 
 @app.route('/billing', methods=['GET', 'POST'])
 def billing():
+    # Creating a billing system
     iid = None
     if 'username' in session:
         if request.method == 'POST':
@@ -364,9 +362,10 @@ def billing():
                 msg = 'Please enter a valid product id'
                 return render_template('billing.html', msg=msg)
                 notify_stock()
-        
+
         notify_stock()
         return render_template('billing.html')
+
 
 # Running flask App
 if __name__ == '__main__':

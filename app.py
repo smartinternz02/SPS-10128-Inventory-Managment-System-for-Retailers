@@ -367,6 +367,67 @@ def billing():
         return render_template('billing.html')
 
 
+
+@app.route('/forgetpass')
+def forgetpass():
+    if request.method == 'POST':
+        username = request.form['username']
+
+        cursor = mysql.connection.cursor()
+        cursor.execute('SELECT username, password, email from users where username = %s', (username,))
+        mysql.connection.commit()
+        user_data = cursor.fetchone()
+        cursor.close()
+
+        if user_data:
+            password = user_data[1]
+            mail = user_data[2]
+            message = f'Hello {username}, Your password is {password}. Please delete this mail after getting it back for your security. Thank you!'
+            sendmail('IMS PASSWORD INFO', message, mail)
+            print("************Password Sent on Mail Successfully************")
+            msg = 'Password sent on registered mail successfully'
+            return render_template('login.html', msg=msg)
+        else:
+            msg = 'No such user exists!'
+            return render_template('passwordforget.html', my_msg=msg)
+            
+    return render_template('passwordforget.html',my_msg='')
+
+
+@app.route('/updatepass')
+def newpass():
+    if request.method == 'POST':
+        uname = request.form['username']
+        oldpass = request.form['password']
+        pass1 = request.form['pass1']
+        pass2 = request.form['pass2']
+
+        if pass1 != pass2:
+            msg = 'New password not matched!'
+            return render_template('passwordupdate', my_msg=msg)
+
+        cursor = mysql.connection.cursor()
+        cursor.execute('SELECT username, password, email from users where username = %s', (username,))
+        mysql.connection.commit()
+        user_data = cursor.fetchone()
+        cursor.close()
+
+        if user_data:
+            if oldpass == user_data[1]:
+                cursor = mysql.connection.cursor()
+                cursor.execute('UPDATE users SET password= %s where username = %s', (username,pass1))
+                mysql.connection.commit()
+                user_data = cursor.fetchone()
+                cursor.close()
+                msg = 'Password updated successfully'
+                return render_template('login.html', msg=msg)
+        else:
+            msg = 'Username or Password is Incorrect'
+            return render_template('passwordupdate', my_msg=msg)
+    return render_template('passwordupdate', my_msg='')
+        
+        
 # Running flask App
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=False)
+    host='0.0.0.0'
+    app.run(debug=False)

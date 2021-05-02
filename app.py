@@ -144,7 +144,7 @@ def register():
         mysql.connection.commit()
         cursor.close()
 
-        msg = 'Successfully registered'
+        msg = 'Successfully Registered'
 
         sendmail('IMS Sinup Info', 'You are successfuly registered in IMS. Your username is {} and your password is {}. Please do not share with anyone.'.format(
             username, password), mail)

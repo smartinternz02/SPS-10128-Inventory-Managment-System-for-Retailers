@@ -108,16 +108,29 @@ def register():
         password = request.form['password']
         confirmPassword = request.form['confirmPassword']
         check = request.form.get('t&c')
-        # session['name'] = username
-
+        
+        # Check if user already exists
+        cursor = mysql.connection.cursor()
+        cursor.execute('SELECT username FROM users WHERE username=%s)', (username,))
+        user = cursor.fetchone()
+        mysql.connection.commit()
+        cursor.close()
+        if user:
+            msg = f'User with username {username} already exists. Please select another username.'
+            return render_template('register.html', msg=msg, valid=False)
+        
         if check == 'on':
             check = True
         else:
             check = False
 
         # Validation of data
-        if len(name) < 3 or len(username) < 8:
-            msg = 'Name must be greater than 2 chars and Username must greater than 8 chars'
+        if len(name) < 3:
+            msg = 'Name must be greater than 2 characters'
+            return render_template('register.html', msg=msg, valid=False)
+
+        if len(username) < 8:
+            msg = 'Username must be greater than 8 chars'
             return render_template('register.html', msg=msg, valid=False)
 
         regex = "^(?=.{8, 20}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$"
@@ -428,5 +441,4 @@ def updatepass():
         
 # Running flask App
 if __name__ == '__main__':
-    host='0.0.0.0'
-    app.run(debug=True)
+    app.run(host='0.0.0.0', debug=False)

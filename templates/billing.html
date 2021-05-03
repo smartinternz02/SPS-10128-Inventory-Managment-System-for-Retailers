@@ -153,7 +153,6 @@
         cart = JSON.parse(sessionStorage.getItem('cart'));
 
         for (let item in cart) {
-            $('#itemslist').empty();
             mystr = `
                 <tr>
                     <td><input type="text" value="${cart[item][0]}"></td>
@@ -171,6 +170,7 @@
 
 
     $("#clearTotal").on("click", function () {
+        sessionStorage.removeItem('cart');
         sessionStorage.clear();
         sessionStorage.setItem('sum', JSON.stringify('0'))
         $('#totalsum').val('');

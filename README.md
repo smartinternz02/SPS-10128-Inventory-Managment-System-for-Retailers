@@ -7,10 +7,10 @@ Inventory Managment System for Retailers
 # Snapshot of the Inventory Managment System
 
 ## Homepage before Login
-![Homepage](./Project_Images/1.png "IMS Homepage")
+![Homepage](./Project_Images/2d.png "IMS Homepage")
 
 ## Homepage after Login
-![Homepage](./Project_Images/2d.png "IMS Homepage")
+![Homepage](./Project_Images/1.png "IMS Homepage")
 
 ## Signup
 ![Homepage](./Project_Images/2a.png "IMS Homepage")

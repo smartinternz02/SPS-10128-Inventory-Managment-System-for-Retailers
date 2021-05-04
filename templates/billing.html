@@ -36,9 +36,8 @@
         <p id="p01">ABC Retailer Shop
             <br> M.987654321
         </p>
-        <label for="cname">Bill No :&emsp; </label><input type="text" id="cno">
-        <label for="cname">Customer Name:&emsp; </label><input type="text" id="cname">
-
+        <label for="cname">Bill No :&emsp; </label><input type="text" id="cno" value="b001">
+        <label for="cname">Customer Name:&emsp; </label><input type="text" id="cname" value="Sonam Gupta">
 
         <!-- **************************Search box********************* -->
         <div class="my-4">
@@ -83,8 +82,7 @@
         <!-- *************** Billing Items ******************** -->
         <div id="d01" class="my-4">
             <h3>Billed Items</h3>
-            <table style="width:100%" id="itemslist">
-                <!-- itemslist -->
+            <table style="width:100%">
                 <tr>
                     <th>Inventory ID</th>
                     <th>Name</th>
@@ -92,7 +90,11 @@
                     <th>Quantity</th>
                     <th>Total Value</th>
                 </tr>
+            </table>
+            <table style="width:100%" id="itemslist">
 
+                <!-- itemslist -->
+               
             </table>
 
             <input class="form-group form-select-lg mt-2" type="text" name="totalsum" id="totalsum" readonly

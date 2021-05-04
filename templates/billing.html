@@ -111,29 +111,7 @@
 {% block js %}
 <script>
 
-    if (sessionStorage.getItem('sum') == null) {
-        //if sum is null
-        sessionStorage.setItem('sum', JSON.stringify('0'));
-    } else {
-        // if sessionStorage has sum
-        sum = parseInt(JSON.parse(sessionStorage.getItem('sum')));
-    };
-
-    $("#plus-btn").click(function () {
-        console.log("clicked");
-        let iid = $('#d1').text();
-        let pname = $('#d2').text()
-        let price = parseInt($('#d4').text())
-        let qty = 1
-        let total = price * qty
-
-        sum = parseInt(JSON.parse(sessionStorage.getItem('sum')));
-        sum += total;
-        sessionStorage.setItem('sum', JSON.stringify(sum))
-        $('#totalsum').val('');
-        $('#totalsum').val(sum);
-    });
-
+    $('#totalsum').val('0');
 
     if (sessionStorage.getItem('cart') == null) {
         var cart = {};
@@ -148,10 +126,22 @@
         let qty = 1
         let total = price * qty
 
-        cart[iid.toString()] = [iid, pname, price, qty, total];
-        sessionStorage.setItem('cart', JSON.stringify(cart));
-        cart = JSON.parse(sessionStorage.getItem('cart'));
+        var idstr = iid
 
+        if (cart[idstr] != undefined) {
+            console.log('if idstr******',cart[idstr])
+            price = cart[idstr][2]
+            qty = cart[idstr][3] + 1;
+            total = price * qty
+            cart[idstr] = [iid, pname, price, qty, total];
+            sessionStorage.setItem('cart', JSON.stringify(cart));
+        }else{
+            cart[idstr] = [iid, pname, price, qty, total];
+            sessionStorage.setItem('cart', JSON.stringify(cart));
+        };
+        
+        cart = JSON.parse(sessionStorage.getItem('cart'));
+        $('#itemslist').empty();
         for (let item in cart) {
             mystr = `
                 <tr>
@@ -168,11 +158,22 @@
 
     });
 
+    // Total bill logic
+    $("#plus-btn").click(function () {
+        var sum = 0;
+        console.log("total sum");
+        if (sessionStorage.getItem('cart') != null) {
+            cart = JSON.parse(sessionStorage.getItem('cart'));
+            for (let item in cart) {
+                sum += parseInt(cart[item][4])
+            }
+        }
+        $('#totalsum').val(sum.toString());
+    });    
+
 
     $("#clearTotal").on("click", function () {
-        sessionStorage.removeItem('cart');
         sessionStorage.clear();
-        sessionStorage.setItem('sum', JSON.stringify('0'))
         $('#totalsum').val('');
         $('#itemslist').empty();
     });

@@ -1,7 +1,7 @@
 from smtplib import SMTP
 
 email = 'sk189436234@gmail.com'
-password = '8700004930'
+password = ''
 
 from_mail = email
 

@@ -111,11 +111,9 @@ def register():
         
         # Check if user already exists
         cursor = mysql.connection.cursor()
-        cursor.execute('SELECT username FROM users WHERE username=%s)', (username,))
-        user = cursor.fetchone()
-        mysql.connection.commit()
-        cursor.close()
-        if user:
+        cursor.execute('SELECT * FROM users WHERE username = % s', (username, ))
+        account = cursor.fetchone()
+        if account:
             msg = f'User with username {username} already exists. Please select another username.'
             return render_template('register.html', msg=msg, valid=False)
         
@@ -441,4 +439,4 @@ def updatepass():
         
 # Running flask App
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080, debug=False)
+    app.run(host='0.0.0.0', port=8080, debug=True)

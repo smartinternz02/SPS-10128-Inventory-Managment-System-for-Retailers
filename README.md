@@ -6,7 +6,7 @@ Inventory Managment System for Retailers
 
 # Snapshot of the Inventory Managment System
 
-# Demo Video
+# Demo Video : ims.mp4
 <video src="./ims.mp4" controls="true" width="720" height="480"></video>
 
 ## Homepage before Login

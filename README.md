@@ -9,6 +9,8 @@ Inventory Managment System for Retailers
 # Demo Video : ims.mp4
 <video src="./ims.mp4" controls="true" width="720" height="480"></video>
 
+[@Demo Video](https://youtu.be/XBomIX4VVek 'Demo Video')
+
 ## Homepage before Login
 ![Homepage](./Project_Images/2d.png "IMS Homepage")
 
